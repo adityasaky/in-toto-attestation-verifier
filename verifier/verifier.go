@@ -17,7 +17,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
-func Verify(layout *Layout, attestations map[string]*dsse.Envelope, parameters map[string]string) error {
+func Verify(layout *Layout, attestations map[string]*dsse.Envelope, parameters map[string]string, withRDResolver bool) error {
 	log.Info("Verifying layout expiry...")
 	expiry, err := time.Parse(time.RFC3339, layout.Expires)
 	if err != nil {
@@ -94,6 +94,14 @@ func Verify(layout *Layout, attestations map[string]*dsse.Envelope, parameters m
 	env, err := getCELEnv()
 	if err != nil {
 		return err
+	}
+
+	// Once stable merge with getCELEnv()
+	if withRDResolver {
+		if env, err = addResourceDescriptorResolver(env); err != nil {
+			return fmt.Errorf("failed to add RD resolver: %w", err)
+		}
+		log.Info("Enabled RD resolver.")
 	}
 
 	for _, step := range layout.Steps {

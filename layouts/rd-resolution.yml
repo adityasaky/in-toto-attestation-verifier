@@ -1,0 +1,50 @@
+# Run Command: cd test-data-rd-resolver; attestation-verifier -a . --layout ../layouts/rd-resolution.yml -r
+
+expires: "2024-10-10T12:23:22Z"
+functionaries:
+  1f57509240de3e7921e29a896553e7cf912441e17fe8cbd675457c7ba45bcee6:
+    keyType: "rsa"
+    scheme: "rsassa-pss-sha256"
+    keyIDHashAlgorithms:
+      - "sha256"
+      - "sha512"
+    keyVal:
+      public: "-----BEGIN PUBLIC KEY-----\nMIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEA0o+jumXN3tE2Xqx1qKjC\ngzCCvAPoOlzQlg+7OLGHnJbQgDxOyhFYMNqJ6cztb26NettmEpPtLDSnM5fPvHuH\nPVoPctzLqE9MiXdD1C7RHbjeSaUBxJV6wSGdAGzNa+8oxxG1ex4H7KHOXD8Mo61o\nitzViEw8knQNDhKHA/JWMnnhX07J1wF+EBWHpBsquAxZMLwy9h4uSlJjbK6TVZS8\nzLEtChVHLqF71px3/rRLlx6gyvSfqsVUd86JDrZtC+MHiq72nnx6N7+4wmSFB6ZQ\naBJvEemP9f54KgSMPLH4fZ63noQKUj9dnOZ+N4f0SGRIIvhN03/LlVA9ifkJBQml\nLKbiNWGAk92+C6NEp2Tj7olNsQ1zOTLzC27CJSWlDq9hSiS7LuaZUy7Gb3acX6Zf\nGZkwYXpXQPp/vM66InJcr5/T1iW/XhtmCHiRd7T24R4qDvS+Xuqv9+pJtHemCUpz\nWhn7N5L7Hr/t0b0SIUNd1PZzD4+lKElcAt99vCVlKQmVAgMBAAE=\n-----END PUBLIC KEY-----"
+    keyID: "1f57509240de3e7921e29a896553e7cf912441e17fe8cbd675457c7ba45bcee6"
+  452e628a9a052784761275fe2eed15d7c0c8c8599bf1977879f130a568af5d8c:
+    keyType: "ecdsa"
+    scheme: "ecdsa-sha2-nistp256"
+    keyIDHashAlgorithms:
+      - "sha256"
+      - "sha512"
+    keyVal:
+      public: "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEB0TVhLF/u/aDcn+3ncIW2lfOKFn4\niCY36NC3k/oPa8sJ8X25H//mhY8/6fNyUh4PzjIEyHPOcr8CAi8dWyuRFQ==\n-----END PUBLIC KEY-----"
+    keyID: "452e628a9a052784761275fe2eed15d7c0c8c8599bf1977879f130a568af5d8c"
+steps:
+  - name: "build"
+    expectedMaterials:
+      - "ALLOW git+https://github.com/marcelamelara/private-data-objects@refs/heads/generate-swsc-build-metadata"
+      - "DISALLOW *"
+    expectedProducts:
+      - "CREATE pdo_client_wawaka"
+      - "DISALLOW *"
+    expectedPredicates:
+      - predicateType: "https://slsa.dev/provenance/v0.2"
+        expectedAttributes:
+          - rule: "predicate.builder.id == 'https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v1.7.0'"
+          - rule: "predicate.invocation.configSource.uri == 'git+https://github.com/marcelamelara/private-data-objects@refs/heads/generate-swsc-build-metadata'"
+          - rule: "predicate.invocation.configSource.digest.sha1 == '87b74378e8c9ccf335a27ffcdc16636990254e1e'"
+        functionaries:
+          - "452e628a9a052784761275fe2eed15d7c0c8c8599bf1977879f130a568af5d8c"
+  - name: "evidence-collection"
+    expectedMaterials:
+      - "MATCH pdo_client_wawaka WITH products FROM build"
+      - "DISALLOW *"
+    expectedPredicates:
+      - predicateType: "https://in-toto.io/attestation/scai/attribute-report/v0.2"
+        expectedAttributes:
+          - rule: "size(predicate.attributes) >= 2"
+          - rule: "predicate.attributes.exists(a, a.attribute == 'HasSBOM')"
+          - rule: "predicate.attributes.exists(a, a.attribute == 'HasSLSA' && get_attestation(a.evidence) == 'https://slsa.dev/provenance/v0.2')"
+        functionaries:
+          - "1f57509240de3e7921e29a896553e7cf912441e17fe8cbd675457c7ba45bcee6"

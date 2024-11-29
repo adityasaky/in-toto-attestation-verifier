@@ -12,7 +12,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:  "ite-10-verifier",
+	Use:  "attestation-verifier",
 	RunE: verify,
 }
 
@@ -20,6 +20,7 @@ var (
 	layoutPath      string
 	attestationsDir string
 	parametersPath  string
+	withResolver    bool
 )
 
 func Execute() {
@@ -51,6 +52,14 @@ func init() {
 		"substitute-parameters",
 		"",
 		"Path to JSON file containing key-value string pairs for parameter substitution in the layout",
+	)
+
+	rootCmd.Flags().BoolVarP(
+		&withResolver,
+		"with-rd-resolver",
+		"r",
+		false,
+		"Enable resource descriptor (RD) resolver needed for cross-attestation checks",
 	)
 
 	rootCmd.MarkFlagRequired("layout")
@@ -107,5 +116,5 @@ func verify(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	return verifier.Verify(layout, attestations, parameters)
+	return verifier.Verify(layout, attestations, parameters, withResolver)
 }
